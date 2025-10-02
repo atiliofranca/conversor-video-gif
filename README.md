@@ -1,35 +1,24 @@
+## Próximas atualizações
+
 # Conversor de Vídeo para GIF
 
 Este projeto é uma aplicação web em Flask que permite converter vídeos (MP4, AVI, MOV, MKV, WMV) de até 3 minutos e 300MB para GIF, com escolha de resolução e redimensionamento automático.
 
 ## Funcionalidades
-- Upload de vídeo via navegador
-- Conversão para GIF usando FFmpeg
-- Limite de duração: 3 minutos
-- Limite de tamanho: 300MB
-- Escolha de resolução do GIF
-- Suporte a Windows, Linux e macOS
+
+
 ## Resoluções disponíveis e explicações
 
 Você pode escolher entre as seguintes resoluções para o GIF gerado:
 
-- **320x180** (baixo, rápido para carregar)
-- **360x240** (comum em previews)
-- **480x270** (padrão SD widescreen)
-- **640x360** (HD leve, boa qualidade sem arquivos grandes)
-- **800x450** (HD intermediário)
-- **854x480** (SD 16:9, usado em vídeos online)
-- **960x540** (qHD, qualidade superior)
-- **1280x720** (HD, arquivos grandes, menos usado para GIFs)
 
 ## Pré-requisitos
-- Python 3.8+
-- FFmpeg instalado e disponível no PATH
-- pip (gerenciador de pacotes Python)
+
 
 ## Instalação
 
 ### Windows
+
 1. Instale o Python: https://www.python.org/downloads/
 2. Instale o FFmpeg:
    - Recomenda-se usar o [Chocolatey](https://chocolatey.org/install):
@@ -53,6 +42,7 @@ Você pode escolher entre as seguintes resoluções para o GIF gerado:
    ```
 
 ### Linux
+
 1. Instale o Python e pip (geralmente já instalados)
 2. Instale o FFmpeg:
    ```bash
@@ -69,6 +59,7 @@ Você pode escolher entre as seguintes resoluções para o GIF gerado:
    ```
 
 ### macOS
+
 1. Instale o Python: https://www.python.org/downloads/
 2. Instale o FFmpeg via Homebrew:
    ```bash
@@ -84,6 +75,7 @@ Você pode escolher entre as seguintes resoluções para o GIF gerado:
    ```
 
 ## Como usar
+
 1. Execute a aplicação:
    ```bash
    # Ative o ambiente virtual se necessário
@@ -92,12 +84,9 @@ Você pode escolher entre as seguintes resoluções para o GIF gerado:
 2. Acesse [http://127.0.0.1:5000](http://127.0.0.1:5000) no navegador
 3. Faça upload do vídeo e aguarde o download do GIF
 
-## Observações
-- O FFmpeg precisa estar disponível no PATH do sistema.
-- O limite de tamanho e duração pode ser ajustado em `app.py`.
-- O GIF gerado é baixado automaticamente após a conversão.
 
 ## Estrutura do projeto
+
 ```
 conversor-video-gif/
 ├── app.py
@@ -109,5 +98,9 @@ conversor-video-gif/
 └── README.md
 ```
 
-## Licença
-MIT
+## Próximas atualizações
+
+- Ajuste visual da barra de progresso de conversão
+- Mais taxas de frames disponíveis para escolha
+- Aumentar a duração máxima do vídeo para 5 minutos
+- O GIF gerado é baixado automaticamente após a conversão.
