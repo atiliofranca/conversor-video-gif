@@ -90,6 +90,19 @@
                 <div class="file-input">
                     <input type="file" id="video" name="video" accept=".mp4,.avi,.mov,.mkv,.wmv">
                 </div>
+                <div class="resolution-select" style="margin-bottom: 20px;">
+                    <label for="resolution">Resolução do GIF:</label>
+                    <select id="resolution" name="resolution">
+                        <option value="320x180">320x180 (baixo, rápido para carregar)</option>
+                        <option value="360x240">360x240 (comum em previews)</option>
+                        <option value="480x270" selected>480x270 (padrão SD widescreen)</option>
+                        <option value="640x360">640x360 (HD leve, boa qualidade sem arquivos grandes)</option>
+                        <option value="800x450">800x450 (HD intermediário)</option>
+                        <option value="854x480">854x480 (SD 16:9, usado em vídeos online)</option>
+                        <option value="960x540">960x540 (qHD, qualidade superior)</option>
+                        <option value="1280x720">1280x720 (HD, arquivos grandes, menos usado para GIFs)</option>
+                    </select>
+                </div>
                 <button type="submit" id="convertButton">Converter para GIF</button>
             </form>
             
@@ -103,7 +116,8 @@
         <div class="info">
             <p>✓ Suporta arquivos MP4, AVI, MOV, MKV e WMV</p>
             <p>✓ Limite máximo de 3 minutos de duração</p>
-            <p>✓ O GIF será redimensionado para no máximo 480px de largura</p>
+            <p>✓ Escolha a resolução do GIF:</p>
+            
             <p>✓ Taxa de 15 frames por segundo para melhor qualidade/tamanho</p>
         </div>
     </div>
@@ -111,13 +125,13 @@
     <script>
         document.getElementById('uploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const fileInput = document.getElementById('video');
+            const resolutionSelect = document.getElementById('resolution');
             const progress = document.getElementById('progress');
             const progressBar = document.getElementById('progressBar');
             const message = document.getElementById('message');
             const convertButton = document.getElementById('convertButton');
-            
+
             if (!fileInput.files.length) {
                 showMessage('Por favor, selecione um arquivo de vídeo.', 'error');
                 return;
@@ -125,7 +139,8 @@
 
             const formData = new FormData();
             formData.append('video', fileInput.files[0]);
-            
+            formData.append('resolution', resolutionSelect.value);
+
             try {
                 convertButton.disabled = true;
                 progress.style.display = 'block';
@@ -138,20 +153,20 @@
                 });
 
                 const contentType = response.headers.get('content-type');
-                
+
                 if (contentType && contentType.includes('application/json')) {
                     // Se a resposta é JSON, provavelmente é um erro
                     const data = await response.json();
                     throw new Error(data.error || 'Erro na conversão');
                 }
-                
+
                 if (!response.ok) {
                     throw new Error('Erro na conversão do vídeo');
                 }
 
                 // Se chegou aqui, a conversão foi bem sucedida
                 progressBar.style.width = '100%';
-                
+
                 // Fazer o download do arquivo
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
@@ -164,7 +179,7 @@
                 window.URL.revokeObjectURL(url);
 
                 showMessage('Conversão concluída com sucesso!', 'success');
-                
+
             } catch (error) {
                 showMessage(error.message, 'error');
                 progressBar.style.width = '0%';
