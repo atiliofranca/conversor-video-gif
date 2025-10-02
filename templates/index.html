@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Vídeo para GIF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .upload-form {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .file-input {
+            margin: 20px 0;
+        }
+        .progress {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+            display: none;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.3s ease;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .info {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Conversor de Vídeo para GIF</h1>
+        
+        <div class="upload-form">
+            <form id="uploadForm">
+                <div class="file-input">
+                    <input type="file" id="video" name="video" accept=".mp4,.avi,.mov,.mkv,.wmv">
+                </div>
+                <button type="submit" id="convertButton">Converter para GIF</button>
+            </form>
+            
+            <div class="progress" id="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div id="message" class="message" style="display: none;"></div>
+        </div>
+
+        <div class="info">
+            <p>✓ Suporta arquivos MP4, AVI, MOV, MKV e WMV</p>
+            <p>✓ Limite máximo de 3 minutos de duração</p>
+            <p>✓ O GIF será redimensionado para no máximo 480px de largura</p>
+            <p>✓ Taxa de 15 frames por segundo para melhor qualidade/tamanho</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('video');
+            const progress = document.getElementById('progress');
+            const progressBar = document.getElementById('progressBar');
+            const message = document.getElementById('message');
+            const convertButton = document.getElementById('convertButton');
+            
+            if (!fileInput.files.length) {
+                showMessage('Por favor, selecione um arquivo de vídeo.', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('video', fileInput.files[0]);
+            
+            try {
+                convertButton.disabled = true;
+                progress.style.display = 'block';
+                progressBar.style.width = '50%';
+                message.style.display = 'none';
+
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const contentType = response.headers.get('content-type');
+                
+                if (contentType && contentType.includes('application/json')) {
+                    // Se a resposta é JSON, provavelmente é um erro
+                    const data = await response.json();
+                    throw new Error(data.error || 'Erro na conversão');
+                }
+                
+                if (!response.ok) {
+                    throw new Error('Erro na conversão do vídeo');
+                }
+
+                // Se chegou aqui, a conversão foi bem sucedida
+                progressBar.style.width = '100%';
+                
+                // Fazer o download do arquivo
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileInput.files[0].name.replace(/\.[^/.]+$/, "") + '.gif';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                showMessage('Conversão concluída com sucesso!', 'success');
+                
+            } catch (error) {
+                showMessage(error.message, 'error');
+                progressBar.style.width = '0%';
+            } finally {
+                convertButton.disabled = false;
+            }
+        });
+
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = 'message ' + type;
+            message.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
